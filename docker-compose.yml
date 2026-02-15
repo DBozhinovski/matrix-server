@@ -46,6 +46,9 @@ services:
       - discord_data:/data
     networks:
       - matrix-net
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   # Telegram Bridge
   mautrix-telegram:
@@ -64,9 +67,6 @@ services:
     restart: unless-stopped
     command:
       [
-        "python3",
-        "-m",
-        "heisenbridge",
         "-c",
         "/data/registration.yaml",
         "-l",
