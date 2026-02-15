@@ -70,7 +70,7 @@ services:
 
   # IRC Bridge (FORCE SLEEP)
   heisenbridge:
-    image: hifi/heisenbridge:latest
+    image: ghcr.io/hifi/heisenbridge:latest
     restart: unless-stopped
     # ---------------------------------------------------------
     entrypoint: ["/bin/sh", "-c", "sleep infinity"]
