@@ -51,15 +51,15 @@ services:
         condition: service_healthy
 
   # Telegram Bridge
-  mautrix-telegram:
-    image: dock.mau.dev/mautrix/telegram:latest
-    restart: unless-stopped
-    environment:
-      - MAUTRIX_TELEGRAM_APPSERVICE_DATABASE=postgres://synapse:${DB_PASSWORD}@postgres/telegram?sslmode=disable
-    volumes:
-      - telegram_data:/data
-    networks:
-      - matrix-net
+  # mautrix-telegram:
+  #   image: dock.mau.dev/mautrix/telegram:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - MAUTRIX_TELEGRAM_APPSERVICE_DATABASE=postgres://synapse:${DB_PASSWORD}@postgres/telegram?sslmode=disable
+  #   volumes:
+  #     - telegram_data:/data
+  #   networks:
+  #     - matrix-net
 
   # IRC Bridge (FIXED COMMAND ADDED)
   heisenbridge:
