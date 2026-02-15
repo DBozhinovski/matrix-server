@@ -58,10 +58,23 @@ services:
     networks:
       - matrix-net
 
-  # IRC Bridge
+  # IRC Bridge (FIXED COMMAND ADDED)
   heisenbridge:
     image: hif1/heisenbridge:latest
     restart: unless-stopped
+    command:
+      [
+        "python3",
+        "-m",
+        "heisenbridge",
+        "-c",
+        "/data/registration.yaml",
+        "-l",
+        "0.0.0.0",
+        "-p",
+        "9898",
+        "http://synapse:8008",
+      ]
     volumes:
       - heisenbridge_data:/data
     networks:
