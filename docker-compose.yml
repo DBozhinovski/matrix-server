@@ -1,13 +1,13 @@
 version: "3.8"
 
 services:
-  # --- 1. The Database ---
+  # Database (Usually stays up, but let's be safe)
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
       - POSTGRES_USER=synapse
-      - POSTGRES_PASSWORD=${DB_PASSWORD} # Defined in Coolify
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -18,16 +18,19 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- 2. The Homeserver ---
+  # Homeserver (FORCE SLEEP)
   synapse:
     image: matrixdotorg/synapse:latest
     restart: unless-stopped
+    # ---------------------------------------------------------
+    # HACK: Keep container alive so we can generate configs
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    # ---------------------------------------------------------
     environment:
-      - SYNAPSE_SERVER_NAME=${MATRIX_DOMAIN} # Defined in Coolify
+      - SYNAPSE_SERVER_NAME=${MATRIX_DOMAIN}
       - SYNAPSE_REPORT_STATS=no
     volumes:
       - synapse_data:/data
-      # Mount ALL bridge volumes so Synapse can read their registration files
       - discord_data:/bridges/discord
       - telegram_data:/bridges/telegram
       - heisenbridge_data:/bridges/heisenbridge
@@ -37,39 +40,45 @@ services:
     networks:
       - matrix-net
 
-  # --- 3. Discord Bridge ---
+  # Discord Bridge (FORCE SLEEP)
   mautrix-discord:
     image: dock.mau.dev/mautrix/discord:latest
     restart: unless-stopped
+    # ---------------------------------------------------------
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    # ---------------------------------------------------------
     environment:
-      # Override config to use Postgres automatically
       - MAUTRIX_DISCORD_APPSERVICE_DATABASE=postgres://synapse:${DB_PASSWORD}@postgres/discord?sslmode=disable
     volumes:
       - discord_data:/data
     networks:
       - matrix-net
 
-  # --- 4. Telegram Bridge ---
+  # Telegram Bridge (FORCE SLEEP)
   mautrix-telegram:
     image: dock.mau.dev/mautrix/telegram:latest
     restart: unless-stopped
+    # ---------------------------------------------------------
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    # ---------------------------------------------------------
     environment:
-      # Override config to use Postgres automatically
       - MAUTRIX_TELEGRAM_APPSERVICE_DATABASE=postgres://synapse:${DB_PASSWORD}@postgres/telegram?sslmode=disable
     volumes:
       - telegram_data:/data
     networks:
       - matrix-net
 
-  # --- 5. IRC Bridge (Heisenbridge) ---
+  # IRC Bridge (FORCE SLEEP)
   heisenbridge:
     image: hifi/heisenbridge:latest
     restart: unless-stopped
+    # ---------------------------------------------------------
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    # ---------------------------------------------------------
     volumes:
       - heisenbridge_data:/data
     networks:
       - matrix-net
-    # Heisenbridge uses an internal SQLite DB by default, which is fine for IRC.
 
 volumes:
   db_data:
