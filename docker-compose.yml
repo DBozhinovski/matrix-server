@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  # Database (Usually stays up, but let's be safe)
+  # Database
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
@@ -18,14 +18,10 @@ services:
       timeout: 5s
       retries: 5
 
-  # Homeserver (FORCE SLEEP)
+  # Homeserver
   synapse:
     image: matrixdotorg/synapse:latest
     restart: unless-stopped
-    # ---------------------------------------------------------
-    # HACK: Keep container alive so we can generate configs
-    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
-    # ---------------------------------------------------------
     environment:
       - SYNAPSE_SERVER_NAME=${MATRIX_DOMAIN}
       - SYNAPSE_REPORT_STATS=no
@@ -40,13 +36,10 @@ services:
     networks:
       - matrix-net
 
-  # Discord Bridge (FORCE SLEEP)
+  # Discord Bridge
   mautrix-discord:
     image: dock.mau.dev/mautrix/discord:latest
     restart: unless-stopped
-    # ---------------------------------------------------------
-    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
-    # ---------------------------------------------------------
     environment:
       - MAUTRIX_DISCORD_APPSERVICE_DATABASE=postgres://synapse:${DB_PASSWORD}@postgres/discord?sslmode=disable
     volumes:
@@ -54,13 +47,10 @@ services:
     networks:
       - matrix-net
 
-  # Telegram Bridge (FORCE SLEEP)
+  # Telegram Bridge
   mautrix-telegram:
     image: dock.mau.dev/mautrix/telegram:latest
     restart: unless-stopped
-    # ---------------------------------------------------------
-    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
-    # ---------------------------------------------------------
     environment:
       - MAUTRIX_TELEGRAM_APPSERVICE_DATABASE=postgres://synapse:${DB_PASSWORD}@postgres/telegram?sslmode=disable
     volumes:
@@ -68,13 +58,10 @@ services:
     networks:
       - matrix-net
 
-  # IRC Bridge (FORCE SLEEP)
+  # IRC Bridge
   heisenbridge:
     image: hif1/heisenbridge:latest
     restart: unless-stopped
-    # ---------------------------------------------------------
-    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
-    # ---------------------------------------------------------
     volumes:
       - heisenbridge_data:/data
     networks:
